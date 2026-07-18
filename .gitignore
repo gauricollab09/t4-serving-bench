@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.egg-info/
+.DS_Store
+.pytest_cache/
+
+# local-only notes, never committed
+*.local.md
+
+# local tooling
+.claude/

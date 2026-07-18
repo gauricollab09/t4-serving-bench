@@ -1,0 +1,29 @@
+{
+  "experiment": "EXP-M: same protocol on microsoft/Phi-3.5-vision-instruct",
+  "date": "2026-07-18",
+  "environment": {
+    "gpu": "Tesla T4 (Colab free tier)",
+    "vllm": "0.25.1+cu129",
+    "dtype": "half",
+    "model": "microsoft/Phi-3.5-vision-instruct (4.2B)",
+    "mm_processor_kwargs": {"num_crops": 16},
+    "notes": "fp16 gate passed (fp16-tolerant lineage, as expected)"
+  },
+  "text_fit": {
+    "ttft_ms": "124.7 + 0.5749 * prompt_tokens",
+    "per_100_tokens_ms": 57.5,
+    "vs_qwen": "2.6x Qwen's 22.5 ms/100tok - consistent with 4.2B vs 2B parameters"
+  },
+  "image_result": {
+    "prompt_tokens_all_sizes": 2525,
+    "ttft_median_ms_by_side": {"224": 3522, "448": 3496, "672": 3496, "896": 3510},
+    "encoder_gap_vs_text_fit_ms": "~1930 (constant across sizes)",
+    "fit_note": "image slope NOT reportable: all image points share one x (2525 tokens) - degenerate fit"
+  },
+  "findings": [
+    "Phi bills a CONSTANT 2525 prompt tokens for every image size 224-896px: the fixed-crop (CLIP-style HD transform, num_crops=16) architecture normalizes all images to the same crop layout. Token cost is set by configuration, not by input resolution.",
+    "Image TTFT is likewise flat (~3.5 s at every size), with a constant ~1.9 s encoder gap: the 'fixed encoder overhead' hypothesis that Qwen2-VL refuted is TRUE for Phi - encoder cost behavior is architectural, not universal.",
+    "Text prefill slope 57.5 vs Qwen's 22.5 ms/100tok (~2.6x) tracks parameter count (4.2B vs 2B).",
+    "Serving implication on modest GPUs: for a 448px image query, Qwen2-VL answers in ~187 ms vs Phi's ~3.5 s (~19x) - dynamic-resolution architectures dominate image workloads at small scale; caveat: Phi's cost is tunable via num_crops (16 used here; fewer crops = fewer tokens, untested)."
+  ]
+}

@@ -1,0 +1,23 @@
+[project]
+name = "t4-serving-bench"
+version = "0.1.0"
+description = "Serving-cost benchmark: text vs image tokens on Qwen2-VL-2B with vLLM on a free Colab T4"
+requires-python = ">=3.10"
+dependencies = [
+    "transformers>=4.56,<5",
+    "pillow",
+    "numpy",
+    "requests",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "matplotlib"]
+# vllm==0.25.1 is installed on Colab only (see notebooks/colab_runner.ipynb);
+# it is never a local dependency.
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["bench"]

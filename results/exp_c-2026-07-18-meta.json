@@ -1,0 +1,26 @@
+{
+  "experiment": "EXP-C repeated-image caching",
+  "date": "2026-07-18",
+  "environment": {
+    "gpu": "Tesla T4 (Colab free tier)",
+    "vllm": "0.25.1+cu129",
+    "dtype": "half",
+    "model": "Qwen/Qwen2-VL-2B-Instruct",
+    "protocol": "one fixed 896px noise image, 20 distinct questions per config; fresh server process for apc_off vs apc_on; warmup excluded"
+  },
+  "summary_ttft_ms": {
+    "apc_off":               {"cold": 943, "warm_median": 335, "speedup": 2.8},
+    "apc_on_image_first":    {"cold": 969, "warm_median": 109, "speedup": 8.9},
+    "apc_on_question_first": {"cold": 989, "warm_median": 351, "speedup": 2.8}
+  },
+  "server_log_stats": {
+    "prefix_cache_hit_rate_observed": "57-85%",
+    "mm_cache_hit_rate_observed": "54-83%"
+  },
+  "findings": [
+    "KV prefix caching gives 8.9x warm speedup (969 -> 109 ms) but ONLY when the image precedes the changing question in the prompt.",
+    "With the question first, caching-on warm TTFT (351 ms) matches caching-off (335 ms): the changing prefix makes KV reuse impossible.",
+    "Unexpected: even with --no-enable-prefix-caching, warm requests drop 943 -> 335 ms. vLLM's multimodal preprocessor/encoder cache is a separate layer that still dedupes the identical image, skipping vision encoding while the full LLM prefill is re-paid.",
+    "Warm apc_off TTFT (335 ms) matches EXP-T text prefill at ~1049 tokens (302 ms): consistent with encoding skipped, prefill paid."
+  ]
+}

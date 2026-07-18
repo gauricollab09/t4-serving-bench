@@ -1,0 +1,34 @@
+{
+  "experiment": "EXP-0 fp16 correctness gate",
+  "date": "2026-07-18",
+  "environment": {
+    "gpu": "Tesla T4 (Colab free tier)",
+    "vllm": "0.25.1+cu129",
+    "dtype": "half",
+    "model": "Qwen/Qwen2-VL-2B-Instruct",
+    "server_ready_seconds": 380,
+    "engine": "vLLM V1",
+    "vision_encoder_attention_backend": "TORCH_SDPA (FA2 unsupported: compute capability 7.5 < 8)",
+    "llm_attention_backend": "TRITON_ATTN",
+    "prefix_caching_default": true
+  },
+  "request": {
+    "image": "448x448 noise, seed 0",
+    "question": "Describe this image.",
+    "temperature": 0,
+    "max_tokens": 64
+  },
+  "measured": {
+    "prompt_tokens": 281,
+    "vision_tokens_expected": 258,
+    "template_and_question_tokens": 23,
+    "ttft_s": 3.855,
+    "e2e_s": 5.988,
+    "caption_prefix": "The image appears to be a highly pixelated and distorted representation of a scene."
+  },
+  "verdict": {
+    "coherent": true,
+    "token_formula_ok": true,
+    "gate_passed": true
+  }
+}

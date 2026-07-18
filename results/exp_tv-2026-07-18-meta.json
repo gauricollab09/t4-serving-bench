@@ -1,0 +1,20 @@
+{
+  "experiment": "EXP-T text sweep + EXP-V image sweep",
+  "date": "2026-07-18",
+  "environment": {
+    "gpu": "Tesla T4 (Colab free tier)",
+    "vllm": "0.25.1+cu129",
+    "transformers": "5.13.1",
+    "dtype": "half",
+    "model": "Qwen/Qwen2-VL-2B-Instruct",
+    "server_ready_seconds": 270,
+    "warmup": "1 text + 4 image requests (one per resolution), excluded from data"
+  },
+  "protocol_note": "EXP-V cell was executed twice; only the first pass per (side_px, seed) is cold and used in fits (see analyze.first_occurrence). Second pass kept in raw JSONL.",
+  "fits_cold": {
+    "text_ttft_ms": "43.9 + 0.2254 * prompt_tokens",
+    "image_ttft_ms": "-5.5 + 0.8551 * prompt_tokens",
+    "per_100_token_prefill_ms": {"text": 22.5, "image": 85.5, "ratio": 3.8},
+    "image_minus_text_gap_ms_at_matched_tokens": {"64": 49.2, "256": 100.2, "576": 289.9, "1024": 638.2}
+  }
+}
